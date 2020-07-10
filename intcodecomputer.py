@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-
+import numpy as np
 class IntcodeComputer():
     '''
             Currently usable on day 9
@@ -47,6 +47,31 @@ class IntcodeComputer():
                     modes = (mode1, mode2, mode3)
                 )
                 logging.debug(f"next to {self.idx}")
+            except Exception as e:
+                logging.debug(repr(e))
+                break
+    
+    def run_w_yield(self):
+        while True:
+            logging.debug("+"*20 + f"idx={self.idx}")
+            logging.debug(f'intcode={self.arr[self.idx]}')
+            try:
+                prog, mode1, mode2, mode3 = self.intcode(self.arr[self.idx])
+                logging.debug(f"{prog.__name__}, {mode1}, {mode2}, {mode3}" )
+                try:
+                    a =self.arr[self.idx+1]
+                    b =self.arr[self.idx+2]
+                    c =self.arr[self.idx+3]
+                except IndexError:
+                    b = c = None
+                logging.debug(f'{prog.__name__}, pos1={a}, pos2={b}, pos3={c}')
+                prog(
+                    a,b,c,
+                    modes = (mode1, mode2, mode3)
+                )
+                logging.debug(f"next to {self.idx}")
+                if prog.__name__ == '_print':
+                    yield self.output[-1]
             except Exception as e:
                 logging.debug(repr(e))
                 break
